@@ -1126,6 +1126,7 @@ Command                                 | Mac Shortcut                          
 								break;
 							//Replace DIV with P
 							case 'DIV':
+							  debugger;
 								node.outerHTML = '<p>' + node.innerHTML + '</p>';
 								if (this.debug) console.log(node, 'div');
 								sanitized = false;
