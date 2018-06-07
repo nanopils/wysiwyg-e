@@ -445,6 +445,14 @@ Command                                 | Mac Shortcut                          
 						notify: true,
 						observer: '_activeStateChanged'
 					},
+          sanitizeHtml: {
+					  type: Boolean,
+						value: true
+					},
+          sanitizeClasses: {
+					  type: Boolean,
+						value: true
+					},
 					//
 					// Array of style types allowed by the sanitize method
 					//
@@ -1019,8 +1027,11 @@ Command                                 | Mac Shortcut                          
 			// Sanitize DOM changes
 			//
 			sanitize(mutations) {
-				if (!mutations) return true;
+				if (!mutations || !this.sanitizeHtml) return true;
 				var sanitized = true, nodes = [], i, j, k, p, pre;
+        var allowedTagNames = this.allowedTagNames.map(function(tag) {
+          return tag.toUpperCase();
+				});
 		
 				for (i = 0; i < mutations.length; i += 1) {
 					var mutation = mutations[i];
@@ -1082,7 +1093,7 @@ Command                                 | Mac Shortcut                          
 						}
 		
 						//Remove the class attribute
-						if (node.hasAttribute && node.hasAttribute('class')) {
+						if (node.hasAttribute && node.hasAttribute('class') && this.sanitizeClasses) {
 							node.removeAttribute('class');
 							if (this.debug) console.log(node, 'class attribute');
 							sanitized = false;
@@ -1126,8 +1137,7 @@ Command                                 | Mac Shortcut                          
 								break;
 							//Replace DIV with P
 							case 'DIV':
-							  debugger;
-								node.outerHTML = '<p>' + node.innerHTML + '</p>';
+								node.outerHTML = allowedTagNames.indexOf('DIV') === -1 ? '<p>' + node.innerHTML + '</p>' : node.outerHTML;
 								if (this.debug) console.log(node, 'div');
 								sanitized = false;
 								break;
@@ -1139,7 +1149,6 @@ Command                                 | Mac Shortcut                          
 								break;
 						}
 		
-						var allowedTagNames = this.allowedTagNames;
 						var tools = this.$.tools.assignedNodes ? this.$.tools.assignedNodes({flatten: true}) : [];
 		
 						for (j = 0; j < tools.length; j += 1) {
