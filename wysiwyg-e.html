@@ -673,6 +673,13 @@ Command                                 | Mac Shortcut                          
 								function (mutations) {
 									sanitizeQueue.push(mutations);
 									if (!sanitizing) sanitize();
+                  this.dispatchEvent(new CustomEvent('change', {
+                    detail: {
+                      target: this.target,
+											value: this.target.innerHTML || ''
+										},
+                    composed: true
+                  }));
 									setTimeout(this.updateSelection.bind(this), 10);
 								}.bind(this)
 							);
